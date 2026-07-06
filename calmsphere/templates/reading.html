@@ -1,0 +1,224 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Reading Therapy</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f7f4f1;
+            color: #2e2a28;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 30px 0;
+            color: #3f2f20;
+        }
+
+        /* GRID */
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            width: 80%;
+            margin: auto;
+        }
+
+        /* CARD */
+        .card {
+            position: relative;
+            height: 200px;
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            color: white;
+            display: flex;
+            align-items: flex-end;
+            padding: 20px;
+            background-size: cover;
+            background-position: center;
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        /* DARK OVERLAY */
+        .card::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            top: 0;
+            left: 0;
+        }
+
+        /* TEXT */
+        .content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .desc {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .back-btn {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            text-decoration: none;
+            background: #bf8b58;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #a97545;
+        }
+
+        /* ROW CARD */
+        .card-row {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .card-row:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* IMAGE */
+        .book-img {
+            width: 200px;
+            /* fixed size for now */
+            height: auto;
+            border-radius: 10px;
+        }
+
+        /* TEXT */
+        .book-info h2 {
+            margin: 0;
+        }
+
+        .book-info p {
+            margin-top: 10px;
+            color: #444;
+        }
+
+        .container a {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <a href="{% url 'dashboard' %}" class="back-btn">← Back</a>
+
+    <h1>📚 Reading Therapy</h1>
+
+    <div class="container">
+
+        <!-- ATOMIC HABITS -->
+        <a href="{% url 'book_atomic' %}">
+            <div class="card-row">
+                <img src="{% static 'books/atomic.jpg' %}" class="book-img">
+                <div class="book-info">
+                    <h2>Atomic Habits</h2>
+                    <p>Build small habits that create big life changes. Learn how tiny daily improvements can transform
+                        your life.</p>
+                </div>
+            </div>
+        </a>
+
+        <!-- POWER OF NOW -->
+        <a href="{% url 'book_power_now' %}">
+            <div class="card-row">
+                <img src="{% static 'books/power.jpg' %}" class="book-img">
+                <div class="book-info">
+                    <h2>The Power of Now</h2>
+                    <p>Learn to live in the present moment and free yourself from stress, anxiety, and overthinking.</p>
+                </div>
+            </div>
+        </a>
+
+        <!-- YOU CAN WIN -->
+        <a href="{% url 'book_you_can_win' %}">
+            <div class="card-row">
+                <img src="{% static 'books/win.jpg' %}" class="book-img">
+                <div class="book-info">
+                    <h2>You Can Win</h2>
+                    <p>Develop a positive mindset, confidence, and the habits needed to succeed in life.</p>
+                </div>
+            </div>
+        </a>
+
+        <!-- HEAL YOUR LIFE -->
+        <a href="{% url 'book_heal_life' %}">
+            <div class="card-row">
+                <img src="{% static 'books/heal.jpg' %}" class="book-img">
+                <div class="book-info">
+                    <h2>You Can Heal Your Life</h2>
+                    <p>Understand how your thoughts shape your life and learn techniques to heal emotionally and
+                        mentally.</p>
+                </div>
+            </div>
+        </a>
+
+        <!-- OVERTHINKING -->
+        <a href="{% url 'book_overthinking' %}">
+            <div class="card-row">
+                <img src="{% static 'books/overthinking.jpg' %}" class="book-img">
+                <div class="book-info">
+                    <h2>Overthinking Cure</h2>
+                    <p>Break free from constant worrying and learn how to calm your mind and reduce unnecessary stress.
+                    </p>
+                </div>
+            </div>
+        </a>
+
+        <!-- MINDFULNESS -->
+        <a href="{% url 'book_mindfulness' %}">
+            <div class="card-row">
+                <img src="{% static 'books/mindfulness.jpg' %}" class="book-img">
+                <div class="book-info">
+                    <h2>Mindfulness in Plain English</h2>
+                    <p>A simple and practical guide to meditation, awareness, and living a peaceful life.</p>
+                </div>
+            </div>
+        </a>
+
+    </div>
+
+
+
+
+
+</body>
+
+</html>

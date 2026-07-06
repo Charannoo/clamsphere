@@ -1,0 +1,159 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleep Meditation - CalmSphere</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f7f4f1;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #4f3f2f;
+        }
+        .navbar {
+            background: #7a5235 !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .navbar-brand {
+            color: #fff !important;
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+        }
+        .navbar-brand:hover {
+            color: #c58a57 !important;
+        }
+        .session-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 30px rgba(74, 55, 45, 0.1);
+            border: 1px solid rgba(191, 139, 88, 0.15);
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+        .session-title {
+            color: #7a5235;
+            font-weight: 700;
+            font-size: 2.2rem;
+        }
+        .session-icon {
+            font-size: 3.5rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .step-box {
+            background: #f7f4f1;
+            border-left: 4px solid #bf8b58;
+            border-radius: 12px;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1rem;
+            transition: transform 0.2s;
+        }
+        .step-box:hover {
+            transform: translateX(4px);
+        }
+        .step-number {
+            display: inline-block;
+            background: #c58a57;
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 32px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-right: 0.7rem;
+        }
+        .btn-back {
+            background: #bf8b58;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            padding: 0.6rem 2rem;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .btn-back:hover {
+            background: #7a5235;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        .btn-start {
+            background: #7a5235;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            padding: 0.8rem 2.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: 0.3s;
+        }
+        .btn-start:hover {
+            background: #c58a57;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        .footer-note {
+            color: #7a5235;
+            font-style: italic;
+            margin-top: 1.5rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'dashboard' %}">☮ CalmSphere</a>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="session-card">
+            <div class="text-center">
+                <span class="session-icon">🌙</span>
+                <h1 class="session-title">Sleep Meditation</h1>
+                <p class="text-muted mb-4">20 minutes &nbsp;·&nbsp; Best done in bed</p>
+            </div>
+
+            <p class="lead" style="color: #4f3f2f;">
+                Sleep cannot be forced — it can only be invited. This practice
+                gently guides your body and mind into deep rest, releasing the
+                day's tension so that sleep may find you naturally.
+            </p>
+
+            <div class="mt-4">
+                <div class="step-box">
+                    <span class="step-number">1</span>
+                    <strong>Progressive Muscle Relaxation</strong>
+                    <p class="mb-0 mt-1 text-muted">Get comfortable in bed. Starting with your feet, tense the muscles as tight as you can for 5 seconds, then release completely. Move up to calves, thighs, hips, belly, hands, arms, shoulders, jaw, and face. Feel the wave of relaxation wash over each part.</p>
+                </div>
+
+                <div class="step-box">
+                    <span class="step-number">2</span>
+                    <strong>Deep Breathing</strong>
+                    <p class="mb-0 mt-1 text-muted">Breathe deeply into your belly — inhale for 4 counts, hold gently for 4 counts, exhale slowly for 6 counts. Let each exhale be a little longer, a little softer, as if you are sighing yourself toward sleep.</p>
+                </div>
+
+                <div class="step-box">
+                    <span class="step-number">3</span>
+                    <strong>Peaceful Visualization</strong>
+                    <p class="mb-0 mt-1 text-muted">Imagine a place where you feel completely safe and at peace — a quiet beach, a forest glade, or a cozy room. Notice the colors, sounds, and sensations. Let this scene fill your mind. If thoughts drift in, gently return to your peaceful place and drift deeper.</p>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <p class="footer-note">You don't have to fall asleep. You just have to rest. Sleep will follow.</p>
+                <a href="{% url 'meditation' %}" class="btn btn-back">← Back to Meditation</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

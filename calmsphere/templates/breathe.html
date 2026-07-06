@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guided Breathing</title>
+
+    <link rel="stylesheet" href="{% static 'css/breathing.css' %}">
+</head>
+<body>
+    <div id="particles"></div>
+
+<div class="meditation-container">
+
+    <div class="timer" id="timer">05:00</div>
+
+    <h1 id="phase">Ready to Begin</h1>
+
+    <div class="orb-container">
+        <div class="orb" id="orb"></div>
+    </div>
+
+    <p class="quote" id="quote">
+        Focus on your breath
+    </p>
+
+    <div class="controls">
+        <button id="startBtn">Start</button>
+        <button id="pauseBtn">Pause</button>
+        <button id="resetBtn">Reset</button>
+    </div>
+
+</div>
+
+<script src="{% static 'js/breathing.js' %}"></script>
+
+</body>
+</html>

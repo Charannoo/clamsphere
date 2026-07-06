@@ -1,0 +1,324 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Report | CalmSphere</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <style>
+        body {
+            min-height: 100vh;
+            background: #f7f4f1;
+            color: #4f3f2f;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .logo-text .calm-text {
+            color: #c58a57;
+        }
+
+        .logo-text .sphere-text {
+            color: #7a5235;
+        }
+
+        .navbar {
+            background: transparent;
+            padding: 0;
+        }
+
+        .navbar .container-fluid {
+            padding: 0;
+        }
+
+        .page-shell {
+            max-width: 1060px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: clamp(2rem, 2.4vw, 2.6rem);
+            font-weight: 700;
+            color: #7a5235;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            color: #6d4a33;
+            margin-bottom: 0;
+        }
+
+        .btn-home {
+            border-radius: 28px;
+            background: #bf8b58;
+            border: none;
+            color: #fff;
+            padding: 10px 22px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .btn-home:hover {
+            background: #a87648;
+            color: #fff;
+        }
+
+        .stat-card {
+            border-radius: 24px;
+            padding: 24px;
+            background: white;
+            box-shadow: 0 12px 36px rgba(75, 54, 37, 0.06);
+            border: 1px solid rgba(181, 145, 101, 0.15);
+            height: 100%;
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+        .stat-number {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #7a5235;
+            line-height: 1.2;
+        }
+        .stat-label {
+            color: #9a7a5a;
+            font-size: 0.95rem;
+            margin-top: 4px;
+        }
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #5a3f27;
+            margin-bottom: 16px;
+        }
+
+        .mood-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .mood-label {
+            width: 70px;
+            font-size: 0.9rem;
+            color: #6d4a33;
+        }
+        .mood-fill-wrap {
+            flex: 1;
+            height: 22px;
+            background: #ede6dc;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .mood-fill {
+            height: 100%;
+            border-radius: 12px;
+            transition: width 0.6s ease;
+        }
+        .mood-count {
+            width: 30px;
+            text-align: right;
+            font-weight: 600;
+            color: #5a3f27;
+            font-size: 0.9rem;
+        }
+
+        .chart-wrap {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 12px 36px rgba(75, 54, 37, 0.06);
+            border: 1px solid rgba(181, 145, 101, 0.15);
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg custom-navbar mb-4">
+        <div class="container-fluid px-0">
+            <a class="navbar-brand logo-text" href="{% url 'dashboard' %}">
+                <span class="calm-text">Calm</span><span class="sphere-text">Sphere</span>
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{% url 'logout' %}" class="icon-button" aria-label="Logout">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10.5 3.5C10.5 3.10218 10.8022 2.8 11.2 2.8H18.3C19.587 2.8 20.7 3.913 20.7 5.2V18.8C20.7 20.087 19.587 21.2 18.3 21.2H11.2C10.8022 21.2 10.5 20.8978 10.5 20.5V16.5H9.5C7.84315 16.5 6.5 15.1569 6.5 13.5V10.5C6.5 8.84315 7.84315 7.5 9.5 7.5H10.5V3.5Z" stroke="#7A5235" stroke-width="1.8" fill="none"/>
+                        <path d="M7.5 12H14.5" stroke="#7A5235" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M11.5 9.5L14.5 12L11.5 14.5" stroke="#7A5235" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-shell">
+        <div class="top-row">
+            <div>
+                <h1 class="title">Monthly Report</h1>
+                <p class="subtitle">{{ month_name }} &middot; A calm summary of your journey.</p>
+            </div>
+            <a href="{% url 'dashboard' %}" class="btn-home">&larr; Back to Home</a>
+        </div>
+
+        <!-- STATS ROW -->
+        <div class="row g-4 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-icon">😌</div>
+                    <div class="stat-number">{{ total_moods }}</div>
+                    <div class="stat-label">Moods Logged</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-icon">{{ top_mood }}</div>
+                    <div class="stat-number">{{ avg_score }}</div>
+                    <div class="stat-label">Avg Mood Score</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-icon">📖</div>
+                    <div class="stat-number">{{ journal_entries_month }}</div>
+                    <div class="stat-label">Journal Entries</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-icon">🔥</div>
+                    <div class="stat-number">{{ current_streak }}</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MOOD DISTRIBUTION + TREND -->
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="chart-wrap">
+                    <h3 class="section-title">Mood Distribution</h3>
+                    {% for code, count in mood_counts.items %}
+                    {% with total=total_moods %}
+                    <div class="mood-bar">
+                        <span class="mood-label">{{ code|title }}</span>
+                        <div class="mood-fill-wrap">
+                            {% widthratio count total 100 as pct %}
+                            <div class="mood-fill" style="width:{% if total > 0 %}{{ pct }}{% else %}0{% endif %}%; background: 
+                                {% if code == 'happy' %}#8BC34A
+                                {% elif code == 'sad' %}#64B5F6
+                                {% elif code == 'stress' %}#FF8A65
+                                {% elif code == 'calm' %}#A5D6A7
+                                {% elif code == 'angry' %}#EF5350
+                                {% elif code == 'excited' %}#FFD54F
+                                {% else %}#BDBDBD{% endif %};">
+                            </div>
+                        </div>
+                        <span class="mood-count">{{ count }}</span>
+                    </div>
+                    {% endwith %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="chart-wrap">
+                    <h3 class="section-title">Weekly Mood Trend</h3>
+                    <canvas id="trendChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- WELLNESS HIGHLIGHT -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="chart-wrap">
+                    <h3 class="section-title">Wellness Highlight</h3>
+                    <p class="mb-0" style="color:#6d4a33;">
+                        {% if total_moods > 0 %}
+                        Your most frequent mood this month was <strong>{{ top_mood }}</strong>.
+                        You logged <strong>{{ total_moods }}</strong> mood entries and wrote
+                        <strong>{{ journal_entries_month }}</strong> journal entries.
+                        {% if current_streak > 1 %}
+                        You're on a <strong>{{ current_streak }}-day</strong> journaling streak &mdash; keep going!
+                        {% elif current_streak == 1 %}
+                        You wrote in your journal today &mdash; great start to a streak!
+                        {% else %}
+                        Start journaling today to build a streak!
+                        {% endif %}
+                        {% else %}
+                        Start logging your moods and journal entries to see your monthly report here.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const labels = {{ trend_labels_json|safe }};
+        const values = {{ trend_values_json|safe }};
+        const ctx = document.getElementById('trendChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Mood Score',
+                    data: values,
+                    borderColor: '#bf8b58',
+                    backgroundColor: 'rgba(191,139,88,0.10)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.35,
+                    pointBackgroundColor: '#7a5235',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 5,
+                        ticks: { stepSize: 1, color: '#9a7a5a' },
+                        grid: { color: 'rgba(181,145,101,0.12)' }
+                    },
+                    x: {
+                        ticks: { color: '#9a7a5a' },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

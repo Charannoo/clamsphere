@@ -1,0 +1,226 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Companion | CalmSphere</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            min-height: 100vh;
+            background: #f7f4f1;
+            color: #4f3f2f;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .logo-text .calm-text { color: #c58a57; }
+        .logo-text .sphere-text { color: #7a5235; }
+
+        .navbar { background: transparent; padding: 0; }
+        .navbar .container-fluid { padding: 0; }
+
+        .page-shell {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .chat-card {
+            border-radius: 28px;
+            background: white;
+            box-shadow: 0 20px 50px rgba(75, 54, 37, 0.08);
+            border: 1px solid rgba(181, 145, 101, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+
+        .chat-header {
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid rgba(181, 145, 101, 0.15);
+        }
+        .chat-header h3 {
+            font-weight: 700;
+            color: #7a5235;
+            margin-bottom: 2px;
+        }
+        .chat-header p {
+            color: #9a7a5a;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .msg {
+            max-width: 80%;
+            padding: 12px 18px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        .msg-user {
+            align-self: flex-end;
+            background: #bf8b58;
+            color: #fff;
+            border-bottom-right-radius: 6px;
+        }
+        .msg-bot {
+            align-self: flex-start;
+            background: #f0ebe4;
+            color: #4f3f2f;
+            border-bottom-left-radius: 6px;
+        }
+
+        .chat-input-wrap {
+            padding: 16px 24px 20px;
+            border-top: 1px solid rgba(181, 145, 101, 0.15);
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input-wrap input {
+            flex: 1;
+            border-radius: 28px;
+            border: 1px solid #d9cdbe;
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            outline: none;
+            background: #faf8f5;
+        }
+        .chat-input-wrap input:focus {
+            border-color: #bf8b58;
+            box-shadow: 0 0 0 2px rgba(191, 139, 88, 0.15);
+        }
+        .chat-input-wrap button {
+            border-radius: 28px;
+            background: #bf8b58;
+            border: none;
+            color: #fff;
+            padding: 10px 24px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .chat-input-wrap button:hover {
+            background: #a87648;
+        }
+
+        .btn-home {
+            border-radius: 28px;
+            background: #bf8b58;
+            border: none;
+            color: #fff;
+            padding: 10px 22px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .btn-home:hover { background: #a87648; color: #fff; }
+
+        .title {
+            font-size: clamp(2rem, 2.4vw, 2.6rem);
+            font-weight: 700;
+            color: #7a5235;
+            margin-bottom: 4px;
+        }
+        .subtitle { color: #6d4a33; margin-bottom: 0; }
+
+        .top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .typing {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .typing span {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #9a7a5a;
+            animation: blink 1.4s infinite both;
+        }
+        .typing span:nth-child(2) { animation-delay: .2s; }
+        .typing span:nth-child(3) { animation-delay: .4s; }
+        @keyframes blink {
+            0%, 80%, 100% { opacity: 0; }
+            40% { opacity: 1; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg custom-navbar mb-4">
+        <div class="container-fluid px-0">
+            <a class="navbar-brand logo-text" href="{% url 'dashboard' %}">
+                <span class="calm-text">Calm</span><span class="sphere-text">Sphere</span>
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{% url 'logout' %}" class="icon-button" aria-label="Logout">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10.5 3.5C10.5 3.10218 10.8022 2.8 11.2 2.8H18.3C19.587 2.8 20.7 3.913 20.7 5.2V18.8C20.7 20.087 19.587 21.2 18.3 21.2H11.2C10.8022 21.2 10.5 20.8978 10.5 20.5V16.5H9.5C7.84315 16.5 6.5 15.1569 6.5 13.5V10.5C6.5 8.84315 7.84315 7.5 9.5 7.5H10.5V3.5Z" stroke="#7A5235" stroke-width="1.8" fill="none"/>
+                        <path d="M7.5 12H14.5" stroke="#7A5235" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M11.5 9.5L14.5 12L11.5 14.5" stroke="#7A5235" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-shell">
+        <div class="top-row">
+            <div>
+                <h1 class="title">AI Companion</h1>
+                <p class="subtitle">Your personal wellness assistant, here to listen.</p>
+            </div>
+            <a href="{% url 'dashboard' %}" class="btn-home">&larr; Back</a>
+        </div>
+
+        <div class="chat-card">
+            <div class="chat-header">
+                <h3>CalmSphere AI</h3>
+                <p>Share how you're feeling — I'm here for you.</p>
+            </div>
+
+            <div class="messages" id="messages">
+                <div class="msg msg-bot">
+                    Hello! I'm your CalmSphere AI companion. How are you feeling today?
+                </div>
+                {% for chat in chat_history %}
+                <div class="msg msg-user">{{ chat.message }}</div>
+                <div class="msg msg-bot">{{ chat.response }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="chat-input-wrap">
+                <input type="text" id="userInput" placeholder="Tell me how you feel..." autofocus>
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/chatbot.js' %}"></script>
+</body>
+
+</html>

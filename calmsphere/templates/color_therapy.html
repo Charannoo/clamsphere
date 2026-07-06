@@ -1,0 +1,296 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Therapy – CalmSphere</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@600&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2a0a3a 0%, #450e6e 50%, #6a1090 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px 16px;
+            color: white;
+        }
+
+        .top-bar {
+            width: 100%;
+            max-width: 620px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 9px 20px;
+            border-radius: 30px;
+            font-size: 13px;
+            transition: 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            color: #f0a8ff;
+        }
+
+        #canvas {
+            border-radius: 50%;
+            box-shadow: 0 0 60px rgba(240, 168, 255, 0.3), 0 20px 60px rgba(0, 0, 0, 0.5);
+            cursor: crosshair;
+            background: white;
+            touch-action: none;
+        }
+
+        .palette {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 18px 0 10px;
+            max-width: 520px;
+        }
+
+        .swatch {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: transform 0.2s, border-color 0.2s;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .swatch:hover {
+            transform: scale(1.2);
+        }
+
+        .swatch.active {
+            border-color: white;
+            transform: scale(1.25);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button.btn-action {
+            padding: 10px 22px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .btn-new {
+            background: #f0a8ff;
+            color: #2a0a3a;
+        }
+
+        .btn-new:hover {
+            background: #f8d0ff;
+            transform: translateY(-2px);
+        }
+
+        .btn-clr {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-clr:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .tip {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-bar">
+        <a href="{% url 'games' %}" class="back-btn">← Games</a>
+        <h1>🎨 Color Therapy</h1>
+        <div style="width:80px"></div>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <div class="palette" id="palette"></div>
+
+    <div class="controls">
+        <button class="btn-action btn-new" onclick="newMandala()">New Mandala</button>
+        <button class="btn-action btn-clr" onclick="clearCanvas()">Clear</button>
+    </div>
+    <p class="tip">Click or drag on any petal to fill it with your chosen colour</p>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const SIZE = Math.min(480, window.innerWidth - 40);
+        canvas.width = SIZE; canvas.height = SIZE;
+        const CX = SIZE / 2, CY = SIZE / 2;
+
+        const COLORS = [
+            '#f9c6d0', '#f7a8c4', '#e87dae', '#d44fa0',
+            '#c3a3e8', '#9d6fde', '#7c3fc4', '#5a28a0',
+            '#a8d8f0', '#6ec0e8', '#3a9fd4', '#1a70a8',
+            '#a8ebd4', '#5dd4aa', '#1db87a', '#0a7850',
+            '#fff0a0', '#ffd84a', '#f0a820', '#d47800',
+            '#ffffff', '#e0e0e0', '#888888', '#333333',
+        ];
+
+        let activeColor = '#f7a8c4';
+        let regions = []; // Each region: {path2D, filled, color}
+        let layers = 5; // number of petal rings
+        let petalsPerLayer = [6, 8, 10, 12, 6];
+        let isDragging = false;
+
+        // Build palette
+        const pal = document.getElementById('palette');
+        COLORS.forEach(c => {
+            const sw = document.createElement('div');
+            sw.className = 'swatch' + (c === activeColor ? ' active' : '');
+            sw.style.background = c;
+            sw.addEventListener('click', () => {
+                activeColor = c;
+                document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+                sw.classList.add('active');
+            });
+            pal.appendChild(sw);
+        });
+
+        function newMandala() {
+            regions = [];
+            layers = 4 + Math.floor(Math.random() * 3);
+            petalsPerLayer = [];
+            for (let i = 0; i < layers; i++) petalsPerLayer.push(6 + i * 2);
+            buildRegions();
+            drawMandala();
+        }
+
+        function buildRegions() {
+            const maxR = SIZE * 0.46;
+            const ringW = maxR / layers;
+
+            // Center circle
+            const centerPath = new Path2D();
+            centerPath.arc(CX, CY, ringW * 0.5, 0, Math.PI * 2);
+            regions.push({ path: centerPath, filled: false, color: '#fff', cx: CX, cy: CY });
+
+            for (let l = 0; l < layers; l++) {
+                const n = petalsPerLayer[l];
+                const innerR = ringW * (l + 0.5);
+                const outerR = ringW * (l + 1.5);
+                const midR = (innerR + outerR) / 2;
+                for (let p = 0; p < n; p++) {
+                    const angle = (p / n) * Math.PI * 2;
+                    const nextAngle = ((p + 1) / n) * Math.PI * 2;
+                    const midAngle = (angle + nextAngle) / 2;
+
+                    const path = new Path2D();
+                    path.moveTo(CX + Math.cos(angle) * innerR, CY + Math.sin(angle) * innerR);
+                    // Bezier petal shape
+                    const cp1x = CX + Math.cos(angle) * midR * 1.1;
+                    const cp1y = CY + Math.sin(angle) * midR * 1.1;
+                    const cp2x = CX + Math.cos(midAngle) * outerR * 0.95;
+                    const cp2y = CY + Math.sin(midAngle) * outerR * 0.95;
+                    const tipX = CX + Math.cos(midAngle) * outerR;
+                    const tipY = CY + Math.sin(midAngle) * outerR;
+                    path.quadraticCurveTo(CX + Math.cos(angle) * midR, CY + Math.sin(angle) * midR, tipX, tipY);
+                    path.quadraticCurveTo(CX + Math.cos(nextAngle) * midR, CY + Math.sin(nextAngle) * midR, CX + Math.cos(nextAngle) * innerR, CY + Math.sin(nextAngle) * innerR);
+                    path.arc(CX, CY, innerR, nextAngle, angle, true);
+                    path.closePath();
+
+                    regions.push({
+                        path, filled: false, color: '#fff',
+                        pcx: CX + Math.cos(midAngle) * midR, pcy: CY + Math.sin(midAngle) * midR
+                    });
+                }
+            }
+        }
+
+        function drawMandala() {
+            ctx.clearRect(0, 0, SIZE, SIZE);
+            ctx.fillStyle = '#fff';
+            ctx.beginPath(); ctx.arc(CX, CY, SIZE * 0.46, 0, Math.PI * 2); ctx.fill();
+
+            regions.forEach(r => {
+                ctx.fillStyle = r.filled ? r.color : '#f8f0ff';
+                ctx.fill(r.path);
+                ctx.strokeStyle = '#c090d8';
+                ctx.lineWidth = 1;
+                ctx.stroke(r.path);
+            });
+
+            // Center dot
+            ctx.fillStyle = activeColor;
+            ctx.beginPath(); ctx.arc(CX, CY, 6, 0, Math.PI * 2); ctx.fill();
+        }
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const src = e.touches ? e.touches[0] : e;
+            return { x: (src.clientX - rect.left) * (SIZE / rect.width), y: (src.clientY - rect.top) * (SIZE / rect.height) };
+        }
+
+        function fillAt(x, y) {
+            for (let i = regions.length - 1; i >= 0; i--) {
+                if (ctx.isPointInPath(regions[i].path, x, y)) {
+                    regions[i].filled = true;
+                    regions[i].color = activeColor;
+                    drawMandala();
+                    return;
+                }
+            }
+        }
+
+        function clearCanvas() {
+            regions.forEach(r => { r.filled = false; r.color = '#fff'; });
+            drawMandala();
+        }
+
+        canvas.addEventListener('mousedown', e => { isDragging = true; const p = getPos(e); fillAt(p.x, p.y); });
+        canvas.addEventListener('mousemove', e => { if (isDragging) { const p = getPos(e); fillAt(p.x, p.y); } });
+        canvas.addEventListener('mouseup', () => isDragging = false);
+        canvas.addEventListener('touchstart', e => { e.preventDefault(); isDragging = true; const p = getPos(e); fillAt(p.x, p.y); });
+        canvas.addEventListener('touchmove', e => { e.preventDefault(); if (isDragging) { const p = getPos(e); fillAt(p.x, p.y); } });
+        canvas.addEventListener('touchend', () => isDragging = false);
+
+        newMandala();
+    </script>
+</body>
+
+</html>

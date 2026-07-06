@@ -1,0 +1,173 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Reading Therapy</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f7f4f1;
+            color: #2e2a28;
+        }
+
+        /* VIDEO BACKGROUND */
+        #bgVideo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+
+        /* DARK OVERLAY */
+        .overlay {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: #f7f4f1;
+            z-index: -1;
+        }
+
+        /* MAIN BOX */
+        .box {
+            width: 60%;
+            max-width: 700px;
+            margin: auto;
+            margin-top: 10%;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #3f2f20;
+        }
+
+        #content {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 10px;
+            background: #bf8b58;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #a97545;
+        }
+
+        .back {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            text-decoration: none;
+            background: #bf8b58;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .back:hover {
+            background: #a97545;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- BACKGROUND VIDEO -->
+    <video id="bgVideo" autoplay muted loop>
+        <source src="{% static 'videos/reading.mp4' %}" type="video/mp4">
+    </video>
+
+    <!-- OVERLAY -->
+    <div class="overlay"></div>
+
+    <!-- BACK BUTTON -->
+    <a href="{% url 'reading' %}" class="back">← Back</a>
+
+    <!-- READING BOX -->
+    <div class="box">
+        <h2 id="title">{{ title }}</h2>
+
+        <div id="content"></div>
+
+        <button onclick="prevPage()">← Prev</button>
+        <button onclick="nextPage()">Next →</button>
+
+        <br><br>
+
+        <a id="bookLink" target="_blank">
+            <button>📖 Read / Explore Full Book</button>
+        </a>
+    </div>
+
+    <!-- SOUND -->
+    <audio id="bgSound" loop>
+        <source src="{% static 'sounds/meditation.mp3' %}" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const pages = JSON.parse('{{ pages|escapejs }}');
+        let current = 0;
+
+        function showPage() {
+            document.getElementById("content").innerHTML =
+                "🌿 " + pages[current];
+        }
+
+        function nextPage() {
+            if (current < pages.length - 1) {
+                current++;
+                showPage();
+            }
+        }
+
+        function prevPage() {
+            if (current > 0) {
+                current--;
+                showPage();
+            }
+        }
+
+        // START
+        window.onload = function () {
+            showPage();
+            document.getElementById("bgSound").play();
+
+            // set book link
+            const title = "{{ title }}";
+            document.getElementById("bookLink").href = links[title];
+        }
+        const links = {
+            "Atomic Habits": "https://dn790007.ca.archive.org/0/items/atomic-habits-pdfdrive/Atomic%20habits%20%28%20PDFDrive%20%29.pdf",
+            "The Power of Now": "https://dn790003.ca.archive.org/0/items/ThePowerOfNowEckhartTolle_201806/The%20Power%20Of%20Now%20-%20Eckhart%20Tolle.pdf",
+            "You Can Win": "https://vidyaprabodhinicollege.edu.in/VPCCECM/Documents/Library/Books/You%20Can%20Win.pdf",
+            "You Can Heal Your Life": "https://ia801300.us.archive.org/16/items/YouCanHealYourLifeLouiseL.Hay/You%20Can%20Heal%20your%20Life%20-%20Louise%20L.%20Hay.pdf",
+            "Overthinking Cure": "https://cdn.bookey.app/files/pdf/book/en/the-overthinking-cure.pdf",
+            "Mindfulness in Plain English": "http://www.cloistral.net/Content/Mindfulness-in-Plain-English.pdf"
+        };
+    </script>
+
+</body>
+
+</html>

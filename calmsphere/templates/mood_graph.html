@@ -1,0 +1,143 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Graph | CalmSphere</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <style>
+        body {
+            min-height: 100vh;
+            background: #f7f4f1;
+            color: #4f3f2f;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .logo-text { font-size: 1.8rem; font-weight: 700; text-decoration: none; }
+        .logo-text .calm-text { color: #c58a57; }
+        .logo-text .sphere-text { color: #7a5235; }
+        .navbar { background: transparent; padding: 0; }
+        .navbar .container-fluid { padding: 0; }
+        .page-shell { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        .top-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 30px; }
+        .title { font-size: clamp(2rem, 2.4vw, 2.6rem); font-weight: 700; color: #7a5235; margin-bottom: 4px; }
+        .subtitle { color: #6d4a33; margin-bottom: 0; }
+        .btn-home { border-radius: 28px; background: #bf8b58; border: none; color: #fff; padding: 10px 22px; font-weight: 600; text-decoration: none; }
+        .btn-home:hover { background: #a87648; color: #fff; }
+        .chart-card { border-radius: 28px; padding: 32px; background: white; box-shadow: 0 20px 50px rgba(75,54,37,0.08); border: 1px solid rgba(181,145,101,0.2); }
+        .mood-legend { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin-top: 20px; }
+        .mood-legend span { font-size: 0.9rem; color: #6d4a33; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg custom-navbar mb-4">
+        <div class="container-fluid px-0">
+            <a class="navbar-brand logo-text" href="{% url 'dashboard' %}">
+                <span class="calm-text">Calm</span><span class="sphere-text">Sphere</span>
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{% url 'logout' %}" class="icon-button" aria-label="Logout">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10.5 3.5C10.5 3.10218 10.8022 2.8 11.2 2.8H18.3C19.587 2.8 20.7 3.913 20.7 5.2V18.8C20.7 20.087 19.587 21.2 18.3 21.2H11.2C10.8022 21.2 10.5 20.8978 10.5 20.5V16.5H9.5C7.84315 16.5 6.5 15.1569 6.5 13.5V10.5C6.5 8.84315 7.84315 7.5 9.5 7.5H10.5V3.5Z" stroke="#7A5235" stroke-width="1.8" fill="none"/>
+                        <path d="M7.5 12H14.5" stroke="#7A5235" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M11.5 9.5L14.5 12L11.5 14.5" stroke="#7A5235" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-shell">
+        <div class="top-row">
+            <div>
+                <h1 class="title">Mood Graph</h1>
+                <p class="subtitle">Visualize your emotional journey over time.</p>
+            </div>
+            <a href="{% url 'dashboard' %}" class="btn-home">&larr; Back</a>
+        </div>
+
+        <div class="chart-card">
+            <canvas id="moodChart" height="300"></canvas>
+        </div>
+
+        <div class="mood-legend">
+            <span>😊 Happy = 5</span>
+            <span>🤩 Excited = 4</span>
+            <span>😌 Calm = 3</span>
+            <span>😢 Sad = 2</span>
+            <span>😫 Stress = 1</span>
+            <span>😡 Angry = 0</span>
+        </div>
+    </div>
+
+    <script>
+        const moodMap = {
+            'happy': 5, 'excited': 4, 'calm': 3,
+            'sad': 2, 'stress': 1, 'angry': 0
+        };
+        const moodColors = {
+            'happy': '#8BC34A', 'excited': '#FFD54F', 'calm': '#A5D6A7',
+            'sad': '#64B5F6', 'stress': '#FF8A65', 'angry': '#EF5350'
+        };
+        const rawDates = {{ dates|safe }};
+        const rawValues = {{ values|safe }};
+        const scores = rawValues.map(v => moodMap[v] !== undefined ? moodMap[v] : 0);
+        const colors = rawValues.map(v => moodColors[v] || '#BDBDBD');
+        const labels = rawDates.map((d, i) => d + ' - ' + rawValues[i]);
+
+        new Chart(document.getElementById('moodChart'), {
+            type: 'line',
+            data: {
+                labels: rawDates,
+                datasets: [{
+                    label: 'Mood Score',
+                    data: scores,
+                    borderColor: '#bf8b58',
+                    backgroundColor: 'rgba(191,139,88,0.10)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.35,
+                    pointBackgroundColor: colors,
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) {
+                                const val = ctx.parsed.y;
+                                const labels = ['Angry','Stress','Sad','Calm','Excited','Happy'];
+                                return labels[val] || 'Unknown';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        min: -0.5, max: 5.5,
+                        ticks: {
+                            stepSize: 1,
+                            color: '#9a7a5a',
+                            callback: function(v) {
+                                return ['Angry','Stress','Sad','Calm','Excited','Happy'][v] || v;
+                            }
+                        },
+                        grid: { color: 'rgba(181,145,101,0.12)' }
+                    },
+                    x: {
+                        ticks: { color: '#9a7a5a', maxRotation: 45 },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
